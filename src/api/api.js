@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: 'http://localhost:8082'
+  baseURL: 'http://localhost:8080'
 });
 
 // 요청 인터셉터 설정
@@ -31,7 +31,7 @@ api.interceptors.response.use(
       try {
         // 리프레시 토큰으로 새 액세스 토큰 요청 (백엔드에 해당 API가 있어야 함)
         const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post('http://localhost:8082/api/auth/refresh', { refreshToken });
+        const response = await axios.post('http://localhost:8080/api/auth/refresh', { refreshToken });
         
         const { token } = response.data;
         localStorage.setItem('token', token);

@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUserInfo } from './api/api';
 
+// 서버 설정을 한 곳에서 관리
+const SERVER_CONFIG = {
+  host: 'localhost',
+  port: 8080,
+  baseURL: function() {
+    return `http://${this.host}:${this.port}`;
+  }
+};
+
 function App() {
   const [loginStatus, setLoginStatus] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
@@ -9,13 +18,13 @@ function App() {
   console.log("App 컴포넌트 렌더링, 상태:", { loginStatus, loading });
   
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8082/oauth2/authorization/google';
+    window.location.href = `${SERVER_CONFIG.baseURL()}/oauth2/authorization/google`;
   };
   
   const checkLoginStatus = async () => {
     try {
       const response = await fetchUserInfo();
-      console.log("사용자 정보 응답:", response.data); // axios는 response.data에 JSON을 제공합니다
+      console.log("사용자 정보 응답:", response.data);
       
       let processedUserInfo;
       if (typeof response.data === 'string' && response.data.includes('Username=')) {
@@ -44,6 +53,7 @@ function App() {
       setLoading(false);
     }
   };
+  
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
@@ -52,27 +62,27 @@ function App() {
   };
   
   useEffect(() => {
-  // URL 파라미터에서 토큰 추출
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
-  const refreshToken = params.get('refreshToken');
-  
-  console.log("URL 파라미터:", window.location.search);
-  console.log("추출된 토큰:", token);
-  console.log("추출된 리프레시 토큰:", refreshToken);
-  
-  if (token) {
-    // 토큰을 localStorage에 저장
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
-    console.log("로컬 스토리지에 토큰 저장 완료");
+    // URL 파라미터에서 토큰 추출
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const refreshToken = params.get('refreshToken');
     
-    // URL에서 토큰 제거 (선택사항)
-    window.history.replaceState({}, document.title, '/');
-  }
-  
-  // 로그인 상태 확인
-  checkLoginStatus();
+    console.log("URL 파라미터:", window.location.search);
+    console.log("추출된 토큰:", token);
+    console.log("추출된 리프레시 토큰:", refreshToken);
+    
+    if (token) {
+      // 토큰을 localStorage에 저장
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      console.log("로컬 스토리지에 토큰 저장 완료");
+      
+      // URL에서 토큰 제거 (선택사항)
+      window.history.replaceState({}, document.title, '/');
+    }
+    
+    // 로그인 상태 확인
+    checkLoginStatus();
   }, []);
   
   if (loading) {

@@ -2,7 +2,7 @@ export const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) throw new Error("No refresh token found");
   
-    const response = await fetch("http://localhost:8082/api/auth/refresh", {
+    const response = await fetch("http://localhost:8080/api/auth/refresh", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
